@@ -1,0 +1,23 @@
+{
+  "name": "webca",
+  "version": "1.0.0",
+  "description": "WebCa Project",
+  "main": "src/api/index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arilvers/WebCA.git"
+  },
+  "keywords": [
+    "webca",
+    "json"
+  ],
+  "author": "Ariane Martinez Gregório",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arilvers/WebCA/issues"
+  },
+  "homepage": "https://github.com/arilvers/WebCA#readme"
+}

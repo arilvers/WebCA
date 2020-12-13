@@ -8,6 +8,12 @@ const app = express()
 
 
 
+app.use(
+    express.json(), //acept json data
+    express.static("src/front-end"), //specify static folder
+    express.static('src/api/public'), //specify static folder
+    fileUpload() //allow file upload
+)
 
 /* FRONT-END - Read - GET method */
 app.get('/', (req, res) => {

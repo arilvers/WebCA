@@ -168,6 +168,91 @@ app.get('/api/products', (req, res) => {
 
 
 
+
+
+/* util functions */
+
+//save the Product data to json file
+const saveData = (data) => {
+    //format object to JSON data 
+    const stringifyData = JSON.stringify({"data": data})
+    const targetDir = 'src/api/json-files/products.json'
+    //write data in file
+    fs.writeFileSync(targetDir, stringifyData)
+}
+
+//get the Product data from json file
+const getData = () => {
+    const targetDir = 'src/api/json-files/products.json'
+    //read data from file
+    const jsonData = fs.readFileSync(targetDir)
+    //covert JSON data in object
+    return JSON.parse(jsonData)
+}
+
+
+//get current date in timestamp format
+const getTimestamp = () => {
+    let dt = new Date();
+    return dt.getTime();
+}
+
+//get current date in usual format
+const getDateTime = () => {
+
+    let dt = new Date();
+
+    year  = dt.getFullYear();
+    month = (dt.getMonth() + 1).toString().padStart(2, "0");
+    day   = dt.getDate().toString().padStart(2, "0");
+    hour   = dt.getHours().toString().padStart(2, "0");
+    minute   = dt.getMinutes().toString().padStart(2, "0");
+    second   = dt.getSeconds().toString().padStart(2, "0");
+
+    return year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
+}
+
+//save image file in server folder
+const saveImage = (file, path) => {
+    // Use the mv() method to place the file somewhere on your server
+    try{
+        file.mv(path);
+        return true;
+    }catch(error){
+        console.log(error);
+        return false;
+    }
+}
+
+
+//verify if value (string) is empty
+function empty(string){
+
+    string = String(string);
+    string = string.replace(/\s{2,}/g, '');
+
+    if(string == null || string == ''){
+        return true
+    }
+    else{
+        return false
+    }
+}
+
+//remove HTML tags and convert to plain text
+function sanitize(value){
+    value = striptags(value)
+    value = sanitizer.sanitize(value)
+    value = sanitizer.escape(value)
+    return value
+  }
+
+/* util functions ends */
+
+
+
+
+
 //configure the server port
 app.listen(3000, () => {
     console.log('Server runs on port 3000')

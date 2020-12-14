@@ -366,3 +366,53 @@
 
                 document.getElementById("formSearch").reset();
         }
+
+
+
+        async function list(id){
+
+            const url = APIUrl+'/'+id;
+
+            await fetch(url)
+                .then(function(response){
+
+                    let status = response.status;
+ 
+                    response.json().then(function(data){         
+
+                        data = data.data[0]
+
+
+                         const createDate = data.created
+                         const updateDate = data.updated
+                   
+
+                         document.querySelector("#showUpdateId").innerHTML = 'Product ID: <b>' + id + '</b>'
+                         document.querySelector("#created").innerHTML = 'Created at: <b>' + createDate + '</b>'
+                         document.querySelector("#updated").innerHTML = 'Updated at: <b>' + updateDate + '</b>'
+
+                         document.querySelector("#updateId").value = id
+                         document.querySelector("#updateName").value = data.name
+                         document.querySelector("#updatePrice").value = moneyFormat(data.price)
+                         document.querySelector("#updateDescription").value = data.description
+
+                         document.querySelector("#showUpdateImage").src = '../'+data.image+'?updated='+updateDate
+                         
+                         document.querySelector("#showDeleteName").innerHTML = 'Really delete product: <b>' + data.name + '</b> ?'
+                         document.querySelector("#deleteId").value = id
+                         document.querySelector("#deleteName").value = data.name
+
+                        id = '';
+                    });
+                })
+                .catch(function(err){ 
+
+                    console.error('Failed retrieving information', err);
+                    defineModalMessage('Failed retrieving information, ' + err);
+                
+            });
+
+            
+        }
+
+        

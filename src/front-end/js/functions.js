@@ -6,10 +6,13 @@
         $('form').submit(false);
 
 
+
         $(".modal").on("hidden.bs.modal", function () {
 
             document.getElementById("formInsert").reset();
-   
+            document.getElementById("formUpdate").reset();
+            document.getElementById("formDelete").reset();
+            document.getElementById("formUpdateImage").reset();    
             document.getElementById("formInsertImage").reset();     
             clearModalMessage();
 

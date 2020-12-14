@@ -87,6 +87,89 @@
 
 
 
+
+
+
+        async function search(){
+
+            document.querySelector("#list").innerHTML = loadingBar()
+
+            let search =  document.querySelector("#search").value;
+
+            if(isNotEmpty(search)){
+
+                search = encodeURI(search);
+
+                await fetch(APIUrl+'?search='+search)
+                    .then(function(response){
+
+                        let status = response.status;
+
+                        response.json().then(function(data){
+
+                            data = data
+
+                            document.querySelector("#list").innerHTML = ' '
+             
+                            if(data.length > 0){
+                                
+                                document.querySelector("#list").innerHTML = ' '
+                                for (i = 0; i < data.length; i++) {
+
+                                    let tr = document.createElement("tr");
+                                    tr.setAttribute("id", 'row-'+data[i].id);
+
+                                    const image = data[i].image+'?updated='+data[i].updated;
+                                    tr.innerHTML = '' +
+                                                '<td><img src="' + baseUrl + '/' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
+                                                '<td>' + data[i].name + '</td>' +
+                                                '<td class="hidden_in_mobile">$' + moneyFormat(data[i].price) + '</td>' +
+                                                '' +
+                                        
+
+                                    '<td> <a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#updateModal"><i class="fas fa-edit"></i></a>'  +
+                                    '<a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash"></i></a>' +
+                                    '';
+
+                                    document.getElementById("list").appendChild(tr);
+                                }
+
+                            }
+
+                            else{
+                                document.querySelector("#list").innerHTML = `<tr>
+                                    <td colspan="4">  
+                                        No search found
+                                    </td>
+                                </tr>`
+                            }
+
+                    
+                        });
+                    })
+                    .catch(function(err){ 
+
+                        console.error('Failed retrieving information', err);
+                        document.querySelector("#message-alert").innerHTML = 'Failed retrieving information, '+ err;
+
+                    });
+
+                }
+                else{
+
+                    document.querySelector("#list").innerHTML = ''
+                    listAll();
+                }
+
+                search = '';
+        }
+
+
+
+
+
+
+
         async function insert(){
 
             let id = '';

@@ -165,6 +165,32 @@ app.get('/api/products', (req, res) => {
 
 
 
+/* Read one - GET method */
+app.get('/api/products/:id', (req, res) => {
+    //get the id from url
+    const id = sanitize(req.params.id);
+
+    //get the existing product data
+    const existRegister = getData().data
+    //check if the id exist or not   
+    const findExist = existRegister.find( register => register.id == id )
+
+    if (findExist) {
+        const data =  JSON.parse(JSON.stringify({"data": [findExist]}))
+        res.send(data)
+    }
+    else{
+        return res.status(404).send(
+            {
+                message: 'The product with id '+id+' not exist'
+            }
+        )
+    }
+
+})
+
+
+
 
 
 

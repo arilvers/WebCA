@@ -416,8 +416,141 @@
         }
 
         
+        
+
+        async function update(){
+
+            const id = document.querySelector("#updateId").value;
+            const name = document.querySelector("#updateName").value;
+            const price = document.querySelector("#updatePrice").value.replace(",", "");
+            const description = document.querySelector("#updateDescription").value;
+
+            let status = '';
+            let message = '';
 
 
+            let data = new FormData()
+
+            data.append('name', name);
+            data.append('price', price);
+            data.append('description', description);
+
+            formData = JSON.stringify(Object.fromEntries(data));
+
+
+            if(isNotEmpty(id) && isNotEmpty(name) && isNotEmpty(price) && isNotEmpty(description)){
+
+                const url = APIUrl+'/'+id;
+
+                await fetch(url, {
+                method: "put",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: formData
+                }).then( (response) => { 
+
+                    status = response.status;
+                    data = response.json();
+                    return data
+
+                    
+                }).then((data) => { 
+
+                    message = data.message;
+
+                    if(status == 200){
+                        $('.modal').modal('hide');
+                        document.querySelector("#formUpdate").reset();
+                        document.querySelector("#list").innerHTML = ''; 
+
+                        document.querySelector("#message-alert").innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">                  
+                            product <b>` + name + `</b> has been successfully updated
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>`
+                    }
+                    else{
+                        console.error(message);
+                        defineModalMessage(message);
+                    }
+
+                }).catch(function(err){ 
+
+                    console.error('Failed update data, ' + err);
+                    defineModalMessage('Failed update data, ' + err);
+                   
+                });  
+
+
+
+                if(document.querySelector('#updateImage').files.length > 0){   
+                     
+                    document.querySelector("#list").innerHTML = loadingBar();
+                                
+                                
+                    const image = document.querySelector('#updateImage');
+
+                    let imageData = new FormData()
+                    imageData.append('image', image.files[0]) 
+        
+
+                    await fetch(url, {
+                        method: "put",
+                        headers: {
+                            'enctype': 'multipart/form-data'
+                        },
+  
+                        body: imageData
+                        }).then( (response) => { 
+
+                            status = response.status;
+                            data = response.json();
+                            return data
+                            
+                        }).then((data) => {
+
+                            document.querySelector("#list").innerHTML = ''
+    
+                            message = data.message;
+
+                            if(status == 200 || message == 'Product data missing'){
+                                document.getElementById("formUpdateImage").reset();
+                            }
+                            else{
+                                console.error(message);
+                                defineModalMessage(message);
+                            }
+                            
+        
+                        }).catch(function(err){ 
+        
+                            console.error('Failed update image, ' + err);
+                            defineModalMessage('Failed update image, ' + err);
+                        
+                        });      
+
+                      
+
+                }
+
+                document.querySelector("#list").innerHTML = ''; 
+                listAll();
+
+            }
+            else{
+
+                emptyFielsMessage();
+
+            }
+
+
+
+        }
+        
         
 
         async function remove(){

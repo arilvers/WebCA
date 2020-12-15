@@ -194,6 +194,121 @@ app.get('/api/products/:id', (req, res) => {
 
 
 
+/* Update - PUT method */
+app.put('/api/products/:id', (req, res) => {
+    //get the id from url
+    const id = sanitize(req.params.id);
+
+    //create product object for fields
+    let inputData = {}
+
+    //get the existing product data
+    const existRegister = getData().data
+
+    //check if the id exist or not       
+    const findExist = existRegister.find( register => register.id == id )
+    if (!findExist) {
+        return res.status(404).send(
+            {
+                message: 'The product with id '+id+' not exist'
+            }
+        )
+    }
+    //filter the products
+    const updateData = existRegister.filter( register => register.id != id )
+
+    
+    inputData.id = findExist.id;
+
+    //catch data registred and compare with data from put request
+    if(findExist.name == req.body.name){
+        inputData.name = findExist.name;
+    }
+    else{
+        inputData.name = sanitize(req.body.name);
+    }
+
+    if(findExist.price == req.body.price){
+        inputData.price = findExist.price;
+    }
+    else{
+        //Define format of Float(Double) type
+        inputData.price = parseFloat(sanitize(req.body.price))
+    }
+
+    if(findExist.description == req.body.description){
+        inputData.description = findExist.description;
+    }
+    else{
+        inputData.description = sanitize(req.body.description);
+    }
+    
+
+    inputData.created = findExist.created;
+    inputData.updated = getDateTime();
+
+
+    if(req.files == null || req.files == ''){
+        inputData.image = findExist.image;
+
+    }
+
+    else{
+
+        image = req.files.image;
+        imagePath = 'src/api/public/images/'+inputData.id+'.jpg'
+
+        //Save image in server
+        const imageStored = saveImage(image, imagePath);
+
+        if(imageStored){
+            inputData.image = 'images/'+inputData.id+'.jpg'
+        }
+        else{
+            return res.status(500).send(
+                {
+                    message: 'Image not uploaded'
+                }
+            )
+        }
+
+    }
+
+
+    //check if the inputData fields are missing
+    if (empty(inputData.name) || empty(inputData.price) || empty(inputData.description)) {
+        return res.status(202).send(
+            {
+                message: 'Product data missing'
+            }
+        )
+    }
+   
+
+
+    //push the updated data
+    updateData.push(inputData)
+    //finally save it
+    saveData(updateData) 
+
+    const linkSelf = (req.protocol+'://'+req.get('host')+req.originalUrl).slice(0, -14);
+    const linkImage = linkSelf.slice(0, -13)
+
+    res.status(200).send(
+        {
+            id: inputData.id, 
+            message: ''+inputData.name+' product has been successfully updated',
+            self: linkSelf+'/'+inputData.id,
+            image: linkImage+'/images/'+inputData.id+'.jpg'
+        }
+    )
+})
+
+
+
+
+
+
 /* Delete - Delete method */
 app.delete('/api/products/:id', (req, res) => {
     

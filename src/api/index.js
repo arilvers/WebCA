@@ -194,6 +194,53 @@ app.get('/api/products/:id', (req, res) => {
 
 
 
+/* Delete - Delete method */
+app.delete('/api/products/:id', (req, res) => {
+    
+    const id = sanitize(req.params.id);
+    
+    //get the existing product
+    const existRegister = getData().data
+    //filter the product data to remove it
+    const filterData = existRegister.filter( register => register.id != id )
+    if ( existRegister.length === filterData.length ) {
+        return res.status(404).send(
+            {
+                message: 'Product does not exist'
+            }
+        )
+    }
+
+    const findExist = existRegister.find( register => register.id == id);
+
+    //Remove image from server 
+
+    imageToDelete = 'src/api/public/'+findExist.image
+
+    try {
+        fs.unlinkSync(imageToDelete)
+        //file removed
+    } catch(err) {
+        console.error(err)
+    }
+    
+
+    //save the filtered data
+    saveData(filterData)
+
+    res.status(204).send(
+        {
+
+        }
+    )
+    
+})
+
+
+
+
+
+
 
 
 /* util functions */

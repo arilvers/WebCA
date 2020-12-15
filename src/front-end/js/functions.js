@@ -416,3 +416,65 @@
         }
 
         
+
+
+        
+
+        async function remove(){
+
+            const id = document.querySelector("#deleteId").value;
+            const name = document.querySelector("#deleteName").value;
+
+            let status = '';
+
+            if(isNotEmpty(id) && isNotEmpty(name)){
+
+                const url = APIUrl+'/'+id;
+
+                await fetch(url, {
+                method: "delete"
+                })
+                .then( (response) => { 
+
+                    status = response.status;
+
+                    if(status == 204){
+
+                        document.querySelector("#message-alert").innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">                  
+                        product <b>` + name + `</b> has been successfully deleted
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`
+
+
+                        $('.modal').modal('hide');
+                        document.querySelector("#formDelete").reset();
+
+                        document.querySelector("#row-"+id).remove();
+                        document.querySelector("#deleteId").value = '';
+                        document.querySelector("#deleteName").value = '';
+
+                    }
+                    else{
+                        console.error('Failed to delete data');
+                        defineModalMessage('Failed to delete data');   
+                    }
+
+
+                    
+
+                }).catch(function(err){ 
+
+                    console.error('Failed to delete data ', err);
+                    defineModalMessage('Failed to delete data, ' + err);           
+
+                });
+
+            }
+
+            else{
+                emptyFielsMessage();
+            }
+           
+        }

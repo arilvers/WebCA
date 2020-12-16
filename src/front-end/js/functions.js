@@ -2,7 +2,7 @@
         var baseUrl = 'https://3000-c39ae4bb-c375-4cd9-a366-49e8a9fa95dc.ws-us03.gitpod.io';
         var pathAPI = '/api/products';
         var APIUrl = baseUrl+pathAPI;
-	    var imagesUrl = baseUrl+'/images'
+	    var imagesUrl = baseUrl
 
         $('form').submit(false);
 
@@ -87,89 +87,6 @@
                                 </tr>`
             return loader
         }
-
-
-
-
-
-
-
-        async function search(){
-
-            document.querySelector("#list").innerHTML = loadingBar()
-
-            let search =  document.querySelector("#search").value;
-
-            if(isNotEmpty(search)){
-
-                search = encodeURI(search);
-
-                await fetch(APIUrl+'?search='+search)
-                    .then(function(response){
-
-                        let status = response.status;
-
-                        response.json().then(function(data){
-
-                            data = data
-
-                            document.querySelector("#list").innerHTML = ' '
-             
-                            if(data.length > 0){
-                                
-                                document.querySelector("#list").innerHTML = ' '
-                                for (i = 0; i < data.length; i++) {
-
-                                    let tr = document.createElement("tr");
-                                    tr.setAttribute("id", 'row-'+data[i].id);
-
-                                    const image = imagesUrl+'/'+data[i].image+'?updated='+data[i].updated;
-                                    tr.innerHTML = '' +
-                                                '<td><img src="' + baseUrl + '/' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
-                                                '<td>' + data[i].name + '</td>' +
-                                                '<td class="hidden_in_mobile">$' + moneyFormat(data[i].price) + '</td>' +
-                                                '' +
-                                        
-
-                                    '<td> <a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#updateModal"><i class="fas fa-edit"></i></a>'  +
-                                    '<a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash"></i></a>' +
-                                    '';
-
-                                    document.getElementById("list").appendChild(tr);
-                                }
-
-                            }
-
-                            else{
-                                document.querySelector("#list").innerHTML = `<tr>
-                                    <td colspan="4">  
-                                        No search found
-                                    </td>
-                                </tr>`
-                            }
-
-                    
-                        });
-                    })
-                    .catch(function(err){ 
-
-                        console.error('Failed retrieving information', err);
-                        document.querySelector("#message-alert").innerHTML = 'Failed retrieving information, '+ err;
-
-                    });
-
-                }
-                else{
-
-                    document.querySelector("#list").innerHTML = ''
-                    listAll();
-                }
-
-                search = '';
-        }
-
-
-
 
 
 
@@ -339,7 +256,7 @@
 
                             const image = imagesUrl+'/'+data[i].image+'?updated='+data[i].updated;
                             tr.innerHTML = '' +
-                                           '<td><img src="' + baseUrl + '/' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
+                                           '<td><img src="' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
                                            '<td>' + data[i].name + '</td>' +
                                            '<td class="hidden_in_mobile">$' + moneyFormat(data[i].price) + '</td>' +
                                            '' +
@@ -370,6 +287,87 @@
 
 
 
+
+
+
+        async function search(){
+
+            document.querySelector("#list").innerHTML = loadingBar()
+
+            let search =  document.querySelector("#search").value;
+
+            if(isNotEmpty(search)){
+
+                search = encodeURI(search);
+
+                await fetch(APIUrl+'?search='+search)
+                    .then(function(response){
+
+                        let status = response.status;
+
+                        response.json().then(function(data){
+
+                            data = data
+
+                            document.querySelector("#list").innerHTML = ' '
+             
+                            if(data.length > 0){
+                                
+                                document.querySelector("#list").innerHTML = ' '
+                                for (i = 0; i < data.length; i++) {
+
+                                    let tr = document.createElement("tr");
+                                    tr.setAttribute("id", 'row-'+data[i].id);
+
+                                    const image = imagesUrl+'/'+data[i].image+'?updated='+data[i].updated;
+                                    tr.innerHTML = '' +
+                                                '<td><img src="' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
+                                                '<td>' + data[i].name + '</td>' +
+                                                '<td class="hidden_in_mobile">$' + moneyFormat(data[i].price) + '</td>' +
+                                                '' +
+                                        
+
+                                    '<td> <a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#updateModal"><i class="fas fa-edit"></i></a>'  +
+                                    '<a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash"></i></a>' +
+                                    '';
+
+                                    document.getElementById("list").appendChild(tr);
+                                }
+
+                            }
+
+                            else{
+                                document.querySelector("#list").innerHTML = `<tr>
+                                    <td colspan="4">  
+                                        No search found
+                                    </td>
+                                </tr>`
+                            }
+
+                    
+                        });
+                    })
+                    .catch(function(err){ 
+
+                        console.error('Failed retrieving information', err);
+                        document.querySelector("#message-alert").innerHTML = 'Failed retrieving information, '+ err;
+
+                    });
+
+                }
+                else{
+
+                    document.querySelector("#list").innerHTML = ''
+                    listAll();
+                }
+
+                search = '';
+        }
+
+
+
+
+
         async function list(id){
 
             const url = APIUrl+'/'+id;
@@ -397,7 +395,7 @@
                          document.querySelector("#updatePrice").value = moneyFormat(data.price)
                          document.querySelector("#updateDescription").value = data.description
 
-                         document.querySelector("#showUpdateImage").src = '../'+data.image+'?updated='+updateDate
+                         document.querySelector("#showUpdateImage").src = imagesUrl+'/'+data.image+'?updated='+updateDate
                          
                          document.querySelector("#showDeleteName").innerHTML = 'Really delete product: <b>' + data.name + '</b> ?'
                          document.querySelector("#deleteId").value = id
@@ -631,7 +629,7 @@
 
                             products += `
                             <div class="col-md-4">
-                                <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+data[i].image+`"></a>
+                                <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+imagesUrl+'/'+data[i].image+`"></a>
                                     <figcaption class="info-wrap">
                                         <div class="row">
                                             <div class="col-md-8"> <a href="#" class="title" data-abc="true">`+data[i].name+`</a> </div>
@@ -682,7 +680,7 @@
 
                                     products += `
                                     <div class="col-md-4">
-                                        <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+data[i].image+`"></a>
+                                        <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+imagesUrl+'/'+data[i].image+`"></a>
                                             <figcaption class="info-wrap">
                                                 <div class="row">
                                                     <div class="col-md-8"> <a href="#" class="title" data-abc="true">`+data[i].name+`</a> </div>

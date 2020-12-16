@@ -611,3 +611,111 @@
             }
            
         }
+
+
+
+
+        async function listProducts(){
+
+            await fetch(APIUrl)
+                .then(function(response){
+
+                    response.json().then(function(data){
+
+                        data = data.data
+
+                        let products = '';
+
+                        for (i = 0; i < data.length; i++) {
+
+                            products += `
+                            <div class="col-md-4">
+                                <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+data[i].image+`"></a>
+                                    <figcaption class="info-wrap">
+                                        <div class="row">
+                                            <div class="col-md-8"> <a href="#" class="title" data-abc="true">`+data[i].name+`</a> </div>
+             
+                                        </div>
+                                    </figcaption>
+                                    <div class="bottom-wrap"> <a href="#" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Buy now </a>
+                                        <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
+                                    </div>
+                                </figure>
+                            </div>
+                            `
+
+                        }
+
+                        document.getElementById("productsList").innerHTML = products;
+                
+                    });
+                })
+                .catch(function(err){ 
+                    console.error('Failed retrieving information', err);
+              
+                 });
+
+               
+        }
+
+
+        
+
+        async function searchProducts(){
+
+            let search =  document.querySelector("#search").value;
+
+            if(isNotEmpty(search)){
+
+                search = encodeURI(search);
+
+                await fetch(APIUrl+'?search='+search)
+                    .then(function(response){
+
+                        response.json().then(function(data){
+
+                            let products = '';
+
+                            if(data.length > 0){
+                                for (i = 0; i < data.length; i++) {
+
+                                    products += `
+                                    <div class="col-md-4">
+                                        <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+data[i].image+`"></a>
+                                            <figcaption class="info-wrap">
+                                                <div class="row">
+                                                    <div class="col-md-8"> <a href="#" class="title" data-abc="true">`+data[i].name+`</a> </div>
+                    
+                                                </div>
+                                            </figcaption>
+                                            <div class="bottom-wrap"> <a href="#" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Buy now </a>
+                                                <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
+                                            </div>
+                                        </figure>
+                                    </div>
+                                    `
+
+                                }
+
+                                document.getElementById("productsList").innerHTML = products;
+                            }
+                            else{
+                                document.getElementById("productsList").innerHTML = '<div class="col-md-12">No product found</div>'
+                            }
+                    
+                        });
+                    })
+                    .catch(function(err){ 
+                        console.error('Failed retrieving information', err);
+                
+                    });
+
+            }
+            else{
+                document.getElementById("productsList").innerHTML = '';
+                listProducts()
+            }
+
+        }
+
+        

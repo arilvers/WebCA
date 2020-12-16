@@ -3,16 +3,17 @@ const fs = require('fs')
 const sanitizer = require('sanitizer');
 const striptags = require('striptags');
 const fileUpload = require('express-fileupload');
+const cors = require('cors')
 
 const app = express()
-
 
 
 app.use(
     express.json(), //acept json data
     express.static("src/front-end"), //specify static folder
-    express.static('src/api/public'), //specify static folder
-    fileUpload() //allow file upload
+    express.static('src/api/public'), //specify another static folder
+    fileUpload(), //allow file upload
+    cors() //Allow requests for all origins
 )
 
 /* FRONT-END - Read - GET method */

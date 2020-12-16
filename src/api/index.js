@@ -7,7 +7,6 @@ const cors = require('cors')
 
 const app = express()
 
-
 app.use(
     express.json(), //acept json data
     express.static("src/front-end"), //specify static folder
@@ -20,7 +19,6 @@ app.use(
 app.get('/', (req, res) => {
     res.sendFile('src/front-end/');
 })
-
 
 
 /* Create - POST method */

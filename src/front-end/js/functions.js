@@ -2,6 +2,7 @@
         var baseUrl = 'https://3000-c39ae4bb-c375-4cd9-a366-49e8a9fa95dc.ws-us03.gitpod.io';
         var pathAPI = '/api/products';
         var APIUrl = baseUrl+pathAPI;
+	    var imagesUrl = baseUrl+'/images'
 
         $('form').submit(false);
 
@@ -122,7 +123,7 @@
                                     let tr = document.createElement("tr");
                                     tr.setAttribute("id", 'row-'+data[i].id);
 
-                                    const image = data[i].image+'?updated='+data[i].updated;
+                                    const image = imagesUrl+'/'+data[i].image+'?updated='+data[i].updated;
                                     tr.innerHTML = '' +
                                                 '<td><img src="' + baseUrl + '/' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
                                                 '<td>' + data[i].name + '</td>' +
@@ -336,7 +337,7 @@
                             let tr = document.createElement("tr");
                             tr.setAttribute("id", 'row-'+data[i].id);
 
-                            const image = data[i].image+'?updated='+data[i].updated;
+                            const image = imagesUrl+'/'+data[i].image+'?updated='+data[i].updated;
                             tr.innerHTML = '' +
                                            '<td><img src="' + baseUrl + '/' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
                                            '<td>' + data[i].name + '</td>' +

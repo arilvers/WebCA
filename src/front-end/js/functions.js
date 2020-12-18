@@ -21,7 +21,6 @@
         }); 
 
 
-
         //Function to format money in EUR format
         function moneyFormat(value){
            price = value.toLocaleString("en-IE", { style: "decimal" , currency:"EUR"});
@@ -97,13 +96,77 @@
             price = price * quantity;
             localStorage.setItem("price" + position, price);
 
-            //show product name to added to cart
+            //show product name added to cart
             document.querySelector("#cartAddMessage").innerHTML = `
-                Product <b>`+product+`</b> added do cart!    
+                Product <b>`+product+`</b> was successfully added to cart!    
+                <div class="mt-3 mb-3">
+                    <a href="shopping-cart.html">See products in shopping cart</a>
+                </div>
             `
         }
 
 
+
+
+        function shoppingCart(){
+            var total = 0; // Total products in LocalStorage
+            var i = 0;     // positions
+            var price = 0; // product price
+            
+            let cartItems = '';
+
+            for(i=1; i<=99; i++){ // verify max of 99 products in localStorage
+            
+                var prod = localStorage.getItem("product" + i + ""); 
+                if(prod != null) {	
+
+                    cartItems += `
+                            <div class="row">
+                                <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
+                                    <h5 class="product-name">
+                                        `+localStorage.getItem("product" + i)+
+                                    `</h5>
+                                </div>
+                                <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
+                                    <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
+                                        <h6>
+                                            `+parseFloat(localStorage.getItem("price" + i)).toFixed(2)+`
+                                            <span class="text-muted"> x </span>
+                                        </h6>
+                                    </div>
+                                    <div class="col-4 col-sm-4 col-md-4">
+                                        <div class="quantity">
+                                            <input type="number" step="1" max="99" min="1" value="`+localStorage.getItem("quantity" + i)+`" class="qty">
+                                        </div>
+                                    </div>
+                                    <div class="col-2 col-sm-2 col-md-2 text-right">
+                                        <button type="button" class="btn btn-outline-danger btn-xs" onclick="removeFromCart(`+i+`)">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            `
+
+                    price = parseFloat(localStorage.getItem("price" + i)); // convert price with parseFloat()
+                    total = (total + price);
+                }
+            } 
+
+            document.getElementById("items").innerHTML = cartItems;
+            //Show total price
+            document.getElementById("total").innerHTML = parseFloat(total).toFixed(2); 
+        }
+
+
+
+        function removeFromCart(i){
+            window.localStorage.removeItem("product" + i);
+            window.localStorage.removeItem("quantity" + i);
+            window.localStorage.removeItem("price" + i);
+            shoppingCart()
+        }  
 
 
 
@@ -651,7 +714,7 @@
              
                                         </div>
                                     </figcaption>
-                                    <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                    <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartMessageModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                         <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                     </div>
                                 </figure>
@@ -701,7 +764,7 @@
                     
                                                 </div>
                                             </figcaption>
-                                            <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                            <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartMessageModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                                 <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                             </div>
                                         </figure>

@@ -4,10 +4,11 @@
         var APIUrl = baseUrl+pathAPI;
 	    var imagesUrl = baseUrl
 
+        //prevent form submit
         $('form').submit(false);
 
 
-
+        //If close modal, clean all form inputs
         $(".modal").on("hidden.bs.modal", function () {
 
             document.getElementById("formInsert").reset();
@@ -21,14 +22,14 @@
 
 
 
-
+        //Function to format money in EUR format
         function moneyFormat(value){
            price = value.toLocaleString("en-IE", { style: "decimal" , currency:"EUR"});
            return price;
         }
 
 
-
+        //Function to verify if fields is not empty
         function isNotEmpty(str){
             if(str.replace(/\s/g,"") == ""){
                 return false;
@@ -38,7 +39,7 @@
             }
         }
 
-
+        //Function to return empty fields message
         function emptyFielsMessage(){
             var x = document.querySelectorAll(".modalResponse");
             var i;
@@ -48,7 +49,7 @@
         }
 
 
-
+        //Function to return modal messages
         function defineModalMessage(message){
             var x = document.querySelectorAll(".modalResponse");
             var i;
@@ -58,7 +59,7 @@
         }
 
 
-
+        //Function to clear all modal messages
         function clearModalMessage(){
             var x = document.querySelectorAll(".modalResponse");
             var i;
@@ -67,7 +68,7 @@
             }
         }
 
-
+        //Function to generate CSS preloader
         function loadingBar(){
             const loader = `<tr>
                                     <td colspan="4">  
@@ -87,6 +88,17 @@
                                 </tr>`
             return loader
         }
+
+
+
+        function AddToCart(product, quantity, price, position){
+            localStorage.setItem("product" + position, product);
+            localStorage.setItem("quantity" + position, quantity);
+            price = price * quantity;
+            localStorage.setItem("price" + position, price);
+            alert("Product added to cart!");
+        }
+
 
 
 
@@ -265,7 +277,6 @@
                             '<td> <a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#updateModal"><i class="fas fa-edit"></i></a>'  +
                             '<a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash"></i></a>' +
                             '';
-
                             
                             document.getElementById("list").appendChild(tr);
 
@@ -636,7 +647,7 @@
              
                                         </div>
                                     </figcaption>
-                                    <div class="bottom-wrap"> <a href="#" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Buy now </a>
+                                    <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+i+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                         <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                     </div>
                                 </figure>
@@ -687,7 +698,7 @@
                     
                                                 </div>
                                             </figcaption>
-                                            <div class="bottom-wrap"> <a href="#" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Buy now </a>
+                                            <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+i+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                                 <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                             </div>
                                         </figure>

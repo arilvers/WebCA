@@ -647,7 +647,7 @@
              
                                         </div>
                                     </figcaption>
-                                    <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+i+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                    <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                         <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                     </div>
                                 </figure>
@@ -698,7 +698,7 @@
                     
                                                 </div>
                                             </figcaption>
-                                            <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+i+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                            <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                                 <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                             </div>
                                         </figure>

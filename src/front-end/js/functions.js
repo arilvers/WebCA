@@ -11,11 +11,26 @@
         //If close modal, clean all form inputs
         $(".modal").on("hidden.bs.modal", function () {
 
-            document.getElementById("formInsert").reset();
-            document.getElementById("formUpdate").reset();
-            document.getElementById("formDelete").reset();
-            document.getElementById("formUpdateImage").reset();    
-            document.getElementById("formInsertImage").reset();     
+            if(document.getElementById("formInsert") !== null){
+                document.getElementById("formInsert").reset();
+            }
+
+            if(document.getElementById("formUpdate") !== null){
+                document.getElementById("formUpdate").reset();
+            }
+
+            if(document.getElementById("formDelete") !== null){
+                document.getElementById("formDelete").reset();
+            } 
+
+            if(document.getElementById("formInsertImage") !== null){
+                document.getElementById("formInsertImage").reset();
+            }
+
+            if(document.getElementById("formUpdateImage") !== null){
+                document.getElementById("formUpdateImage").reset();  
+            }
+
             clearModalMessage();
 
         }); 
@@ -89,7 +104,6 @@
         }
 
 
-
         function AddToCart(product, quantity, price, position){
             localStorage.setItem("product" + position, product);
             localStorage.setItem("quantity" + position, quantity);
@@ -102,7 +116,22 @@
                 <div class="mt-3 mb-3">
                     <a href="shopping-cart.html">See products in shopping cart</a>
                 </div>
+
+                <div class="mt-3 mb-3">
+                    <a href="javascript:void(0);" data-dismiss="modal" aria-label="Close">Continue shopping</a>
+                </div>
+
             `
+        }
+
+
+        $("#shoppingCartMini").load("shopping-cart.html #shopping-cart");
+
+        function reloadMiniCart(){
+            setTimeout(function(){ 
+                shoppingCart();
+            }, 200);
+            
         }
 
 

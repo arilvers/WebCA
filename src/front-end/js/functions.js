@@ -96,7 +96,11 @@
             localStorage.setItem("quantity" + position, quantity);
             price = price * quantity;
             localStorage.setItem("price" + position, price);
-            alert("Product added to cart!");
+
+            //show product name to added to cart
+            document.querySelector("#cartAddMessage").innerHTML = `
+                Product <b>`+product+`</b> added do cart!    
+            `
         }
 
 
@@ -647,13 +651,12 @@
              
                                         </div>
                                     </figcaption>
-                                    <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                    <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                         <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                     </div>
                                 </figure>
                             </div>
                             `
-
                         }
 
                         document.getElementById("productsList").innerHTML = products;
@@ -698,7 +701,7 @@
                     
                                                 </div>
                                             </figcaption>
-                                            <div class="bottom-wrap"> <a onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                            <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                                 <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                             </div>
                                         </figure>

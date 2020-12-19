@@ -138,54 +138,64 @@
 
 
         function shoppingCart(){
-            var total = 0; // Total products in LocalStorage
-            var i = 0;     // positions
-            var price = 0; // product price
+            let total = 0; // Total products in LocalStorage
+            let i = 0;     // positions
+            let price = 0; // product price
             
             let cartItems = '';
+            let subTotal = []
 
             for(i=1; i<=99; i++){ // verify max of 99 products in localStorage
             
-                var prod = localStorage.getItem("product" + i + ""); 
+                let prod = localStorage.getItem("product" + i + ""); 
                 if(prod != null) {	
+
+                    subTotal[i] = (parseFloat(localStorage.getItem("price" + i)) * parseFloat(localStorage.getItem("quantity" + i))).toFixed(2)
 
                     cartItems += `
                             <div class="row">
-                                <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
+
+                                <div style="padding: 8px 20px 0px 16px">
                                     <h5 class="product-name">
                                         `+localStorage.getItem("product" + i)+
                                     `</h5>
                                 </div>
-                                <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
-                                    <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
-                                        <h6>
-                                            `+parseFloat(localStorage.getItem("price" + i)).toFixed(2)+`
-                                            <span class="text-muted"> x </span>
-                                        </h6>
-                                    </div>
-                                    <div class="col-4 col-sm-4 col-md-4">
-                                        <div class="quantity">
-                                            <input type="number" step="1" max="99" min="1" value="`+localStorage.getItem("quantity" + i)+`" class="qty">
-                                        </div>
-                                    </div>
-                                    <div class="col-2 col-sm-2 col-md-2 text-right">
-                                        <button type="button" class="btn btn-outline-danger btn-xs" onclick="removeFromCart(`+i+`)">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                        </button>
+        
+                                <div style="padding: 12px 5px 0px 5px">
+                                    <h6>
+                                        $`+parseFloat(localStorage.getItem("price" + i)).toFixed(2)+`
+                                        <span class="text-muted"> x </span>
+                                    </h6>
+                                </div>
+
+                                <div style="padding: 2px 5px 0px 0px">
+                                    <div class="quantity">
+                                        <input type="number" step="1" max="99" min="1" id="qty`+i+`" class="qty" value="`+localStorage.getItem("quantity" + i)+`" onchange="changeQuantityFromCart(`+i+`)">
                                     </div>
                                 </div>
+
+                                <div style="padding: 8px 5px 0px 5px">
+                                    $`+subTotal[i]+`
+                                </div>
+
+                                <div style="padding: 0px 5px 0px 5px">
+                                    <button type="button" class="btn btn-outline-danger btn-xs" onclick="removeFromCart(`+i+`)">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                
                             </div>
                             <hr>
                             `
 
-                    price = parseFloat(localStorage.getItem("price" + i)); // convert price with parseFloat()
-                    total = (total + price);
+                    
+                    total += parseFloat(subTotal[i]);
                 }
             } 
 
             document.getElementById("items").innerHTML = cartItems;
             //Show total price
-            document.getElementById("total").innerHTML = parseFloat(total).toFixed(2); 
+            document.getElementById("total").innerHTML = total.toFixed(2); 
         }
 
 
@@ -196,6 +206,21 @@
             window.localStorage.removeItem("price" + i);
             shoppingCart()
         }  
+
+
+         function changeQuantityFromCart(i){
+
+            let newQuantity = document.getElementById("qty"+i).value;
+            window.localStorage.setItem("quantity" + i, newQuantity);
+
+            console.log(localStorage.getItem("quantity" + i))
+
+            setTimeout(function(){
+                shoppingCart()
+            }, 200);
+
+        }  
+
 
 
 

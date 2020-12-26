@@ -33,6 +33,9 @@ app.post('/api/products', (req, res) => {
     //Sanitize fields 
     inputData.name = sanitize(req.body.name);
 
+    //Generate slug field
+    inputData.slug = toSEOString(inputData.name)
+
     //Define format of Float(Double) type
     inputData.price = parseFloat(sanitize(req.body.price))
 
@@ -164,15 +167,25 @@ app.get('/api/products', (req, res) => {
 
 
 
-/* Read one - GET method */
+/* Read one - GET method - search for id or slug */
 app.get('/api/products/:id', (req, res) => {
+
     //get the id from url
     const id = sanitize(req.params.id);
 
     //get the existing product data
     const existRegister = getData().data
-    //check if the id exist or not   
-    const findExist = existRegister.find( register => register.id == id )
+
+    let findExist = '';
+    //If is number, search for id, if not, search for slug
+    if(isNaN(id)){
+        //check if the slug exist or not   
+        findExist = existRegister.find( register => register.slug == id )
+    }
+    else{
+        //check if the id exist or not   
+        findExist = existRegister.find( register => register.id == id )
+    }
 
     if (findExist) {
         const data =  JSON.parse(JSON.stringify({"data": [findExist]}))
@@ -181,7 +194,7 @@ app.get('/api/products/:id', (req, res) => {
     else{
         return res.status(404).send(
             {
-                message: 'The product with id '+id+' not exist'
+                message: 'The product with id or slug '+id+' not exist'
             }
         )
     }
@@ -226,6 +239,10 @@ app.put('/api/products/:id', (req, res) => {
     else{
         inputData.name = sanitize(req.body.name);
     }
+
+    //Generate slug field
+    inputData.slug = toSEOString(inputData.name)
+
 
     if(findExist.price == req.body.price){
         inputData.price = findExist.price;
@@ -431,11 +448,30 @@ function sanitize(value){
     value = striptags(value)
     value = sanitizer.sanitize(value)
     value = sanitizer.escape(value)
+    //remove extra spaces
+    value = value.replace(/\s+/g, ' ').trim()
     return value
   }
 
-/* util functions ends */
 
+
+  function toSEOString(string) {      
+    // make the url lowercase         
+    let encodedString = string.toString().toLowerCase(); 
+    // replace & with and           
+    encodedString = encodedString.split(/\&+/).join("-and-")
+    // remove invalid characters 
+    encodedString = encodedString.split(/[^a-z0-9]/).join("-");       
+    // remove duplicates 
+    encodedString = encodedString.split(/-+/).join("-");
+    // trim leading & trailing characters 
+    encodedString = encodedString.trim('-');  
+    return encodedString; 
+  }
+
+
+
+/* util functions ends */
 
 
 

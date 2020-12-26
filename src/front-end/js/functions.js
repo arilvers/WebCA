@@ -7,7 +7,6 @@
         //prevent form submit
         $('form').submit(false);
 
-
         //If close modal, clean all form inputs
         $(".modal").on("hidden.bs.modal", function () {
 
@@ -104,11 +103,32 @@
         }
 
 
-        function AddToCart(product, quantity, price, position){
-            localStorage.setItem("product" + position, product);
-            localStorage.setItem("quantity" + position, quantity);
+
+
+
+        function AddToCart(id, product, quantity, price){
+ 
+            localStorage.setItem("product" + id, product);
+            localStorage.setItem("quantity" + id, quantity);
             price = price * quantity;
-            localStorage.setItem("price" + position, price);
+            localStorage.setItem("price" + id, price);
+
+            // Get the existing data
+            var existing = localStorage.getItem('ids');
+
+            // If no existing data, create an array
+            // Otherwise, convert the localStorage string to an array
+            existing = existing ? existing.split(',') : [];
+
+            // Add new data to localStorage Array
+            existing.push(id);
+
+            //Remove  duplicated values
+            let uniqids = [ ...new Set(existing) ];
+            console.log(uniqids)
+
+            // Save back to localStorage
+            localStorage.setItem('ids', uniqids.toString());
 
             //show product name added to cart
             document.querySelector("#cartAddMessage").innerHTML = `
@@ -125,6 +145,8 @@
         }
 
 
+
+
         $("#shoppingCartMini").load("shopping-cart.html #shopping-cart");
 
         function reloadMiniCart(){
@@ -138,48 +160,52 @@
 
 
         function shoppingCart(){
+
             let total = 0; // Total products in LocalStorage
-            let i = 0;     // positions
-            let price = 0; // product price
-            
+
             let cartItems = '';
             let subTotal = []
 
-            for(i=1; i<=99; i++){ // verify max of 99 products in localStorage
+            let ids = []
+            ids = localStorage.getItem('ids')
+            ids = ids.split(',')
             
-                let prod = localStorage.getItem("product" + i + ""); 
+            
+            for (let id of ids) {
+         
+                let prod = localStorage.getItem("product" + id + ""); 
                 if(prod != null) {	
 
-                    subTotal[i] = (parseFloat(localStorage.getItem("price" + i)) * parseFloat(localStorage.getItem("quantity" + i))).toFixed(2)
+                    subTotal[id] = (parseFloat(localStorage.getItem("price" + id)) * parseFloat(localStorage.getItem("quantity" + id))).toFixed(2)
 
                     cartItems += `
                             <div class="row">
 
                                 <div style="padding: 8px 20px 0px 16px">
                                     <h5 class="product-name">
-                                        `+localStorage.getItem("product" + i)+
+                                        `+localStorage.getItem("product" + id)+
                                     `</h5>
                                 </div>
         
                                 <div style="padding: 12px 5px 0px 5px">
                                     <h6>
-                                        $`+parseFloat(localStorage.getItem("price" + i)).toFixed(2)+`
+                                        $`+parseFloat(localStorage.getItem("price" + id)).toFixed(2)+`
                                         <span class="text-muted"> x </span>
                                     </h6>
                                 </div>
 
                                 <div style="padding: 2px 5px 0px 0px">
                                     <div class="quantity">
-                                        <input type="number" step="1" max="99" min="1" id="qty`+i+`" class="qty" value="`+localStorage.getItem("quantity" + i)+`" onchange="changeQuantityFromCart(`+i+`)">
+                                        <input type="number" step="1" max="99" min="1" id="qty`+id+`" class="qty" value="`+localStorage.getItem("quantity" + id)+`" onchange="changeQuantityFromCart('`+id+`')">
                                     </div>
                                 </div>
 
                                 <div style="padding: 8px 5px 0px 5px">
-                                    $`+subTotal[i]+`
+                                    $`+subTotal[id]+`
                                 </div>
 
                                 <div style="padding: 0px 5px 0px 5px">
-                                    <button type="button" class="btn btn-outline-danger btn-xs" onclick="removeFromCart(`+i+`)">
+                                    <button type="button" class="btn btn-outline-danger btn-xs" onclick="removeFromCart('`+id+`')">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -189,31 +215,48 @@
                             `
 
                     
-                    total += parseFloat(subTotal[i]);
+                    total += parseFloat(subTotal[id]);
                 }
             } 
 
             document.getElementById("items").innerHTML = cartItems;
             //Show total price
             document.getElementById("total").innerHTML = total.toFixed(2); 
+
+            
         }
 
 
 
-        function removeFromCart(i){
-            window.localStorage.removeItem("product" + i);
-            window.localStorage.removeItem("quantity" + i);
-            window.localStorage.removeItem("price" + i);
+
+
+        function removeFromCart(id){
+
+
+            window.localStorage.removeItem("product" + id);
+            window.localStorage.removeItem("quantity" + id);
+            window.localStorage.removeItem("price" + id);
+
+            let ids = []
+            ids = localStorage.getItem('ids')
+            ids = ids.split(',')
+            ids = ids.filter(item => item !== id)
+
+            // Save back to localStorage
+            window.localStorage.setItem('ids', ids.toString());
+
+            console.log(window.localStorage.getItem('ids'))
+
             shoppingCart()
         }  
 
 
-         function changeQuantityFromCart(i){
+         function changeQuantityFromCart(id){
 
-            let newQuantity = document.getElementById("qty"+i).value;
-            window.localStorage.setItem("quantity" + i, newQuantity);
+            let newQuantity = document.getElementById("qty"+id).value;
+            window.localStorage.setItem("quantity" + id, newQuantity);
 
-            console.log(localStorage.getItem("quantity" + i))
+            console.log(localStorage.getItem("quantity" + id))
 
             setTimeout(function(){
                 shoppingCart()
@@ -761,14 +804,14 @@
 
                             products += `
                             <div class="col-md-4">
-                                <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+imagesUrl+'/'+data[i].image+`"></a>
+                                <figure class="card card-product-grid card-lg"> <a href="product.html?slug=`+data[i].slug+`" class="img-wrap" data-abc="true"><img src="`+imagesUrl+'/'+data[i].image+`"></a>
                                     <figcaption class="info-wrap">
                                         <div class="row">
-                                            <div class="col-md-8"> <a href="#" class="title" data-abc="true">`+data[i].name+`</a> </div>
+                                            <div class="col-md-8"> <a href="product.html?slug=`+data[i].slug+`" class="title" data-abc="true">`+data[i].name+`</a> </div>
              
                                         </div>
                                     </figcaption>
-                                    <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartMessageModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                    <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartMessageModal" onclick="AddToCart('`+data[i].id+`', '`+data[i].name+`', '1', '`+data[i].price+`')" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                         <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                     </div>
                                 </figure>
@@ -811,14 +854,14 @@
 
                                     products += `
                                     <div class="col-md-4">
-                                        <figure class="card card-product-grid card-lg"> <a href="#" class="img-wrap" data-abc="true"><img src="`+imagesUrl+'/'+data[i].image+`"></a>
+                                        <figure class="card card-product-grid card-lg"> <a href="product.html?slug=`+data[i].slug+`" class="img-wrap" data-abc="true"><img src="`+imagesUrl+'/'+data[i].image+`"></a>
                                             <figcaption class="info-wrap">
                                                 <div class="row">
-                                                    <div class="col-md-8"> <a href="#" class="title" data-abc="true">`+data[i].name+`</a> </div>
+                                                    <div class="col-md-8"> <a href="product.html?slug=`+data[i].slug+`" class="title" data-abc="true">`+data[i].name+`</a> </div>
                     
                                                 </div>
                                             </figcaption>
-                                            <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartMessageModal" onclick="AddToCart('`+data[i].name+`', '1', '`+data[i].price+`', `+(i+1)+`)" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                                            <div class="bottom-wrap"> <a data-toggle="modal" data-target="#cartMessageModal" onclick="AddToCart('`+data[i].id+`', '`+data[i].name+`', '1', '`+data[i].price+`')" href="javascript:void(0);" class="btn btn-primary float-right" data-abc="true"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
                                                 <div class="price-wrap"> <span class="price h5">$`+moneyFormat(data[i].price)+`</span> <br> <small class="text-success">Free shipping</small> </div>
                                             </div>
                                         </figure>
@@ -848,4 +891,128 @@
 
         }
 
+
+
+        async function listOneProduct(slug){
+
+            await fetch(APIUrl+'/'+slug)
+            .then(function(response){
+
+                let status = response.status;
+
+                response.json().then(function(data){
+                    
+                    let products = ''
+
+                    if(status == 200){
+
+                        data = data.data[0]
+
+                        addToCartButton(data.id, data.name, data.price);
+
+                        products = `
+                        <div class="card">
+                        <div class="row">
+                            <aside class="col-sm-7 border-right">
+                            <article class="gallery-wrap"> 
+                            <div class="img-big-wrap">
+                                <div> 
+                                    <a href="`+imagesUrl+'/'+data.image+`" target="_blank">
+                                        <img src="`+imagesUrl+'/'+data.image+`" class="productDetailImg">
+                                    </a>
+                                </div>
+                            </div> 
+                        
+                            </article> <!-- gallery-wrap .end// -->
+                                    </aside>
+                                    <aside class="col-sm-5">
+                            <article class="card-body p-5">
+                                <h3 class="title mb-3">`+data.name+`</h3>
+                        
+                            <p class="price-detail-wrap"> 
+                                <span class="price h3 text-warning"> 
+                                    <span class="currency">$</span><span class="num">`+moneyFormat(data.price)+`</span>
+                                </span> 
+                                
+                            </p> <!-- price-detail-wrap .// -->
+                            <dl class="item-property">
+                            <dt>Description</dt>
+                            <dd><p>`+data.description+`</p></dd>
+                            </dl>
+                        
+                        
+                            <hr>
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <dl class="param param-inline">
+                                        <dt>Quantity: </dt>
+                                        <dd>
+                                            <input type="number" step="1" max="99" min="1" value="1" class="mt-2" id="qtd" onchange="addToCartButton('`+data.id+`', '`+data.name+`', '`+data.price+`')">
+                                        </dd>
+                                        </dl>  <!-- item-property .// -->
+                                    </div> <!-- col.// -->
+                        
+                                    
+                                </div> <!-- row.// -->
+                                <hr>
+                               
+
+                                <span id="cartBtn"></span>
+
+
+                            </article> <!-- card-body.// -->
+                                    </aside> <!-- col.// -->
+                                </div> <!-- row.// -->
+                            </div> <!-- card.// -->
+                        `
+                    }
+
+                    else{
+                        products = `Product not found`
+                    }
+
+
+                    document.getElementById("productDetails").innerHTML = products;
+                    
+                });
+            })
+            .catch(function(err){ 
+
+                console.error('Failed retrieving information', err);
+                defineModalMessage('Failed retrieving information, ' + err);
+            
+            });
+
+               
+        }
+
+
+
+        function addToCartButton(id, name, price){
+
+            setTimeout(function(){ 
+
+                let qtd = 1;
+
+                if(document.getElementById("qtd") == null){
+                    qtd = 1
+                }
+                else{
+                    qtd = document.getElementById("qtd").value
+                }
+
+                console.log(qtd) 
+                let button = `
+                <a data-toggle="modal" data-target="#cartMessageModal" onclick="AddToCart('`+id+`', '`+name+`', '`+qtd+`', '`+price+`')" href="javascript:void(0);" class="btn btn-primary" data-abc="true"> 
+                    <i class="fas fa-shopping-cart"></i> Add to cart 
+                </a>
+                `
+
+                document.getElementById("cartBtn").innerHTML = button;
+
+            }, 100);
+        }
+
+
+  
         

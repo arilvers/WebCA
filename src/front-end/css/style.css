@@ -514,6 +514,17 @@
     overflow: auto; /*habilita o overflow no corpo da modal*/
     }
 
+    .img-big-wrap{
+        overflow: hidden;
+    }
+
+
+    .productDetailImg{
+        width:96% !important;
+        height: auto !important;
+        margin:20px 20px 0px 20px !important;
+    }
+
 
 
     @media screen and (max-width: 600px) {
@@ -529,6 +540,12 @@
 
         .table-image{
             width:70px;
+        }
+
+
+        .productDetailImg{
+            width:100% !important;
+            margin:0px 0px 0px 0px !important;
         }
 
       }

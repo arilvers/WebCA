@@ -8,14 +8,14 @@ const cors = require('cors')
 const app = express()
 
 app.use(
-    express.json(), //acept json data
+    express.json(), //return json data
     express.static("src/front-end"), //specify static folder
     express.static('src/api/public'), //specify another static folder
     fileUpload(), //allow file upload
     cors() //Allow requests for all origins
 )
 
-/* FRONT-END - Read - GET method */
+/* front-end - Read - GET method */
 app.get('/', (req, res) => {
     res.sendFile('src/front-end/');
 })
@@ -64,7 +64,7 @@ app.post('/api/products', (req, res) => {
         });
     }
     else{
-
+        //request file
         image = req.files.image;
         imagePath = 'src/api/public/images/'+inputData.id+'.jpg'
 
@@ -86,7 +86,7 @@ app.post('/api/products', (req, res) => {
 
 
 
-    //check if the inputData fields are missing
+    //check if the inputData fields are missing or empty
     if (empty(inputData.name) || empty(inputData.price) || empty(inputData.description)) {
         return res.status(202).send(
             {
@@ -116,9 +116,13 @@ app.post('/api/products', (req, res) => {
     //save the new product data to file
     saveData(existRegister);
 
+    //Generate link
     const linkSelf = req.protocol+'://'+req.get('host')+req.originalUrl
+
+    //Generate image link from image stored in server
     const linkImage = (req.protocol+'://'+req.get('host')+req.originalUrl).slice(0, -13)
     
+    //Formated response 
     res.status(201).send(
         {
             id: inputData.id, 
@@ -167,7 +171,7 @@ app.get('/api/products', (req, res) => {
 
 
 
-/* Read one - GET method - search for id or slug */
+/* Read one - GET method - get register by id or slug */
 app.get('/api/products/:id', (req, res) => {
 
     //get the id from url
@@ -177,13 +181,13 @@ app.get('/api/products/:id', (req, res) => {
     const existRegister = getData().data
 
     let findExist = '';
-    //If is number, search for id, if not, search for slug
+    //If is number, search by id, else, search by slug
     if(isNaN(id)){
-        //check if the slug exist or not   
+        //check if the slug exist
         findExist = existRegister.find( register => register.slug == id )
     }
     else{
-        //check if the id exist or not   
+        //check if the id exist
         findExist = existRegister.find( register => register.id == id )
     }
 
@@ -229,7 +233,7 @@ app.put('/api/products/:id', (req, res) => {
     //filter the products
     const updateData = existRegister.filter( register => register.id != id )
 
-    
+    //set the id to the previously defined id
     inputData.id = findExist.id;
 
     //catch data registred and compare with data from put request
@@ -240,7 +244,7 @@ app.put('/api/products/:id', (req, res) => {
         inputData.name = sanitize(req.body.name);
     }
 
-    //Generate slug field
+    //Generate slug field with name
     inputData.slug = toSEOString(inputData.name)
 
 
@@ -304,7 +308,7 @@ app.put('/api/products/:id', (req, res) => {
 
     //push the updated data
     updateData.push(inputData)
-    //finally save it
+    //finally save it in file
     saveData(updateData) 
 
     const linkSelf = (req.protocol+'://'+req.get('host')+req.originalUrl).slice(0, -14);
@@ -431,8 +435,9 @@ const saveImage = (file, path) => {
 
 //verify if value (string) is empty
 function empty(string){
-
+    //Force convert to string
     string = String(string);
+    //Remove extra white spaces
     string = string.replace(/\s{2,}/g, '');
 
     if(string == null || string == ''){
@@ -448,7 +453,7 @@ function sanitize(value){
     value = striptags(value)
     value = sanitizer.sanitize(value)
     value = sanitizer.escape(value)
-    //remove extra spaces
+    //remove extra white spaces
     value = value.replace(/\s+/g, ' ').trim()
     return value
   }
@@ -469,14 +474,11 @@ function sanitize(value){
     return encodedString; 
   }
 
-
-
 /* util functions ends */
 
 
 
-
 //configure the server port
-app.listen(3000, () => {
-    console.log('Server runs on port 3000')
-})
+var listener = app.listen(3000, function(){
+    console.log('Listening on port ' + listener.address().port); 
+});

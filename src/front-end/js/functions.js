@@ -7,6 +7,7 @@
         //prevent form submit
         $('form').submit(false);
 
+
         //If close modal, clean all form inputs
         $(".modal").on("hidden.bs.modal", function () {
 
@@ -44,6 +45,7 @@
 
         //Function to verify if fields is not empty
         function isNotEmpty(str){
+            //Remove all extra white spaces
             if(str.replace(/\s/g,"") == ""){
                 return false;
             }
@@ -107,7 +109,7 @@
 
 
         function AddToCart(id, product, quantity, price){
- 
+            //store products data in javascript localStorage
             localStorage.setItem("product" + id, product);
             localStorage.setItem("quantity" + id, quantity);
             price = price * quantity;
@@ -146,7 +148,7 @@
 
 
 
-
+        //Load div with id="shopping-cart" from file "shopping-cart.html"
         $("#shoppingCartMini").load("shopping-cart.html #shopping-cart");
 
         function reloadMiniCart(){
@@ -158,7 +160,7 @@
 
 
 
-
+        //Show stored product data
         function shoppingCart(){
 
             let total = 0; // Total products in LocalStorage
@@ -173,6 +175,7 @@
             
             for (let id of ids) {
          
+                //Get product data from localStorage
                 let prod = localStorage.getItem("product" + id + ""); 
                 if(prod != null) {	
 
@@ -220,7 +223,7 @@
             } 
 
             document.getElementById("items").innerHTML = cartItems;
-            //Show total price
+            //Show total price with two decimals
             document.getElementById("total").innerHTML = total.toFixed(2); 
 
             
@@ -232,14 +235,16 @@
 
         function removeFromCart(id){
 
-
+            //Remove stored data in localStorage
             window.localStorage.removeItem("product" + id);
             window.localStorage.removeItem("quantity" + id);
             window.localStorage.removeItem("price" + id);
 
             let ids = []
             ids = localStorage.getItem('ids')
+            //convert string with another strings separated with comma in array
             ids = ids.split(',')
+            //search defined id in array
             ids = ids.filter(item => item !== id)
 
             // Save back to localStorage
@@ -247,16 +252,18 @@
 
             console.log(window.localStorage.getItem('ids'))
 
+            //Refresh shopping Cart
             shoppingCart()
         }  
 
 
          function changeQuantityFromCart(id){
 
+            //get quantity defined in field with prop id
             let newQuantity = document.getElementById("qty"+id).value;
-            window.localStorage.setItem("quantity" + id, newQuantity);
 
-            console.log(localStorage.getItem("quantity" + id))
+            //set in localStorage the new quantity defined in field with prop id
+            window.localStorage.setItem("quantity" + id, newQuantity);
 
             setTimeout(function(){
                 shoppingCart()
@@ -273,19 +280,22 @@
             let status = '';
             let message = '';
 
+            //get data from inputs
             const name = document.querySelector("#insertName").value;
             const price = document.querySelector("#insertPrice").value.replace(",", "");
             const description = document.querySelector("#insertDescription").value;
 
             let data = new FormData()
 
+            //convert to form data and apend to send to server
             data.append('name', name);
             data.append('price', price);
             data.append('description', description);
 
+            //convert data form object to JSON
             formData = JSON.stringify(Object.fromEntries(data));
 
-   
+            //verify if field is not empty
             if(isNotEmpty(name) && isNotEmpty(price) && isNotEmpty(description)){
 
                 const url = APIUrl;
@@ -295,12 +305,13 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                //make sure to serialize your JSON body
+                //Send form data in body
                 body: formData
 
                 }).then( (response) => { 
 
                     status = response.status;
+                    //convert data in JSON format
                     data = response.json();
                     return data
 
@@ -341,20 +352,22 @@
                 });
   
 
-
+                //If image was select in input type file
                 if(document.querySelector('#insertImage').files.length > 0){  
                     
-                    
+                    //change to loading bar preloader
                     document.querySelector("#list").innerHTML = loadingBar()
 
                     const image = document.querySelector('#insertImage');
     
                     let imageData = new FormData()
+                    //get image in formdata object and apend
                     imageData.append('image', image.files[0]) 
         
-    
+                    //Image uploaded in PUT method
                     await fetch(url+'/'+id, {
                         method: "put",
+                        //define 'enctype': 'multipart/form-data' to allow send files
                         headers: {
                             'enctype': 'multipart/form-data'
                         },
@@ -392,7 +405,9 @@
 
                 }
 
+                //Clear products list
                 document.querySelector("#list").innerHTML = ''; 
+                //Refresh products list with new insert product
                 listAll();
             }
             else{
@@ -431,6 +446,8 @@
                             tr.setAttribute("id", 'row-'+data[i].id);
 
                             const image = imagesUrl+'/'+data[i].image+'?updated='+data[i].updated;
+
+                            //Generate table cells of table with products data
                             tr.innerHTML = '' +
                                            '<td><img src="' + image + '" alt="' + data[i].name + '" class="table-image"></td>' +
                                            '<td>' + data[i].name + '</td>' +
@@ -442,6 +459,7 @@
                             '<a href="javascript:void(0);" class="table-icon" onclick=list("'+data[i].id+'") data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash"></i></a>' +
                             '';
                             
+                            //Put table cells in table rows
                             document.getElementById("list").appendChild(tr);
 
 
@@ -473,6 +491,7 @@
 
             if(isNotEmpty(search)){
 
+                //Encode to url format
                 search = encodeURI(search);
 
                 await fetch(APIUrl+'?search='+search)
@@ -512,6 +531,7 @@
                             }
 
                             else{
+                                //If search not found
                                 document.querySelector("#list").innerHTML = `<tr>
                                     <td colspan="4">  
                                         No search found
@@ -554,13 +574,14 @@
  
                     response.json().then(function(data){         
 
+                        //get only one register
                         data = data.data[0]
 
 
                          const createDate = data.created
                          const updateDate = data.updated
                    
-
+                        //fill input fields and divs with data from server
                          document.querySelector("#showUpdateId").innerHTML = 'Product ID: <b>' + id + '</b>'
                          document.querySelector("#created").innerHTML = 'Created at: <b>' + createDate + '</b>'
                          document.querySelector("#updated").innerHTML = 'Updated at: <b>' + updateDate + '</b>'
@@ -594,6 +615,7 @@
 
         async function update(){
 
+            //Get data from input fields
             const id = document.querySelector("#updateId").value;
             const name = document.querySelector("#updateName").value;
             const price = document.querySelector("#updatePrice").value.replace(",", "");
@@ -611,7 +633,7 @@
 
             formData = JSON.stringify(Object.fromEntries(data));
 
-
+            //verify if values is not empty
             if(isNotEmpty(id) && isNotEmpty(name) && isNotEmpty(price) && isNotEmpty(description)){
 
                 const url = APIUrl+'/'+id;
@@ -660,7 +682,7 @@
                 });  
 
 
-
+                //verify if image file was send 
                 if(document.querySelector('#updateImage').files.length > 0){   
                      
                     document.querySelector("#list").innerHTML = loadingBar();
@@ -758,6 +780,7 @@
                         $('.modal').modal('hide');
                         document.querySelector("#formDelete").reset();
 
+                        //Remove row from table
                         document.querySelector("#row-"+id).remove();
                         document.querySelector("#deleteId").value = '';
                         document.querySelector("#deleteName").value = '';
